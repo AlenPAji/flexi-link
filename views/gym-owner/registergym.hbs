@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gym Information Form</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h2>Gym Information Form</h2>
+    <form action="/gymowner/registergym" method="post">
+  <div class="form-group">
+    <label for="gymName">Name of the Gym:</label>
+    <input type="text" class="form-control" id="gymName" name="gymName" placeholder="Enter gym name" required>
+  </div>
+  <div class="form-group">
+    <label for="membershipFee">Membership Fee:</label>
+    <input type="number" class="form-control" id="membershipFee" name="membershipFee" placeholder="Enter membership fee" required>
+  </div>
+  <div class="form-group">
+    <label for="monthlyFees">Monthly Fees:</label>
+    <input type="number" class="form-control" id="monthlyFees" name="monthlyFees" placeholder="Enter monthly fees" required>
+  </div>
+  <div class="form-group">
+    <label for="peakStartTime">Peak Time(s):</label>
+    <div class="input-group">
+      <input type="time" class="form-control" id="peakStartTime" name="peakStartTime" placeholder="Start time" required>
+      <div class="input-group-prepend input-group-append">
+        <span class="input-group-text">to</span>
+      </div>
+      <input type="time" class="form-control" id="peakEndTime" name="peakEndTime" placeholder="End time" required>
+    </div>
+    <!-- Allow users to add multiple peak times -->
+    <!-- Add JavaScript functionality to dynamically add more peak time fields if needed -->
+    <button type="button" class="btn btn-primary mt-2" id="addPeakTime">Add Peak Time</button>
+  </div>
+  <div class="form-group">
+    <label for="gymDescription">Short Description:</label>
+    <textarea class="form-control" id="gymDescription" name="gymDescription" rows="3" placeholder="Enter a short description of the gym" required></textarea>
+  </div>
+  <button type="submit" class="btn btn-success">Submit</button>
+</form>
+
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function(){
+      // Add functionality to dynamically add peak time fields
+      $('#addPeakTime').click(function(){
+        var peakTimeField = `
+          <div class="input-group mt-2">
+            <input type="time" class="form-control" placeholder="Start time" required>
+            <div class="input-group-prepend input-group-append">
+              <span class="input-group-text">to</span>
+            </div>
+            <input type="time" class="form-control" placeholder="End time" required>
+          </div>
+        `;
+        $('.form-group').eq(3).append(peakTimeField); // Append after the peak time label
+      });
+    });
+  </script>
+</body>
+</html>
