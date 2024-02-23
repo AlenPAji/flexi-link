@@ -47,30 +47,45 @@ function gymregisterstep1(gymData){
         newgym.peakTimes.morningPeakEndTime=gymData.morningPeakEndTime
         newgym.peakTimes.nightPeakStartTime=gymData.nightPeakStartTime
         newgym.peakTimes.nightPeakEndTime=gymData.nightPeakEndTime
-
-
-
-
-
-        
         newgym.description=gymData.description
         newgym.owner=gymData.gymowner
         newgym.holidayDays=gymData.holidayDays
-
         newgym.save()
         resolve(newgym)
 
-
-        
-        // userData.password=await bcrypt.hash(userData.password,10)
-        // const newowner = new gymowner();
-        // newowner.email=userData.email;
-        // newowner.username=userData.username;
-        // newowner.password=userData.password;
-        // newowner.save();
-        // resolve(newowner);
     })
 
+}
+
+function gymregisterstep2(id,locationdata){
+
+  return new Promise(async(resolve,reject)=>{
+    const [longitude, latitude] = locationdata.coordinates.split(',').map(coord => parseFloat(coord));
+
+    const updatedGym = await Gym.findByIdAndUpdate(id, {
+      $set: {
+        "location.coordinates": [longitude, latitude],
+        address: locationdata.address
+      }
+    }, { new: true });
+
+    resolve(updatedGym)
+
+})
+}
+
+function gymregisterstep3(id,imageData){
+  return new Promise(async(resolve,reject)=>{
+    const gym = await Gym.findById(id);
+    gym.images = gym.images || [];
+    gym.images.push({
+      data: imageData.data,
+      contentType: imageData.contentType,
+      imageName: imageData.imageName
+    });
+    const updatedGym = await gym.save();
+    resolve(updatedGym)
+})
 }
 
 function calculatedailyfee(monthlyFee,holidays){
@@ -85,8 +100,27 @@ function calculatedailyfee(monthlyFee,holidays){
     return dailyFee;
 }
 
+function getdetailsofownersgym(id){
+  return new Promise(async(resolve,reject)=>{
+    const all = await Gym.find({owner:id});
+    resolve(all)
+
+
+})
+}
+
+function chk(id,imageData){
+  return new Promise(async(resolve,reject)=>{
+    const gym = await Gym.findById(id)
+
+    resolve(gym)
+})
+}
+
+
+
 
 
 
 module.exports = { calculatedailyfee,
-gymregisterstep1};
+gymregisterstep1,gymregisterstep2,gymregisterstep3,chk};

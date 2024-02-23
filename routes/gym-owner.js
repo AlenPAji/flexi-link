@@ -1,6 +1,22 @@
 var express = require("express");
+const multer = require('multer');
 const session = require('express-session');
 var router = express.Router();
+//var x=require("../public/images")
+
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, '../public/images');
+//   },
+//   filename: (req, file, cb) => {
+//     console.log(file);
+//     cb(null, extractFileName(file));
+//   }
+// });
+// const upload = multer({ storage: storage });
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 var loginregister = require('../helpers/registerandlogin/userlogin')
 var gymregister = require("../helpers/gymregister/gymreg")
@@ -28,7 +44,10 @@ router.get('/address',function(req,res){
 
 router.post('/address',function(req,res){
 
-  console.log("hi")
+  gymregister.gymregisterstep2(req.session.gymregid,req.body).then((response)=>{
+  res.redirect("/gymowner/imageupload")
+  })
+
   
 })
 
@@ -40,6 +59,37 @@ router.get("/register", function (req, res, next) {
 router.get("/imageupload", function (req, res, next) {
   res.render("gym-owner/gymimage");
 });
+
+
+router.post('/imageupload', upload.array('photos', 5), function (req, res, next) {
+var files=req.files
+for (let i = 0; i < files.length; i++) {
+  console.log("hi")
+  const imageData = {
+      data: files[i].buffer,
+      contentType: files[i].mimetype,
+      imageName: files[i].originalname
+  };
+
+  gymregister.gymregisterstep3(req.session.gymregid,imageData).then((response)=>{
+    console.log(response)
+  })
+
+}
+})
+
+
+router.get("/imgview",(req,res)=>{
+  const l='65d8646edd4bbd9e0e59b186'
+  gymregister.chk(l).then((response)=>{
+    //res.writeHead(200, {'Content-Type': 'multipart/form-data'});
+    const imagesHTML = response.images.map(image => `<img src="data:${image.contentType};base64,${image.data.toString('base64')}" alt="${image.imageName}">`);
+    res.send(imagesHTML.join(''));
+  })
+
+})
+
+
 
 router.get("/login",(req,res,next)=>{
 
@@ -53,7 +103,6 @@ router.post("/login",(req,res,next)=>{
       req.session.ownerloggedIn=true
     }  
     res.redirect("/gymowner");
-
     console.log(response)
   })
 })
@@ -76,19 +125,20 @@ router.post("/registergym", verifyLogin,function (req, res, next) {
   }else{
     req.body.holidayDays=[]
   }
-
   req.body.dailyfees=gymregister.calculatedailyfee(req.body.monthlyFees,req.body.holidayDays)
 
   gymregister.gymregisterstep1(req.body).then((response)=>{
     console.log(response)
-  })
-
-  
+    req.session.gymregid=response._id
+    res.redirect("/gymowner/address")
+  }) 
 });
 
 router.get("/",verifyLogin, function (req, res, next) {
 res.render("gym-owner/owner-dashboard",{username:req.session.gymowner.username})
 //console.log(req.session.gymowner.username)
 });
+
+
 
 module.exports = router;
