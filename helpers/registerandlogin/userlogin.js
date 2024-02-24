@@ -37,6 +37,7 @@ function login(userdata){
 
             bcrypt.compare(psd, val.password, function(err, result) {
                 if(result){
+                    //console.log(val)
                     response.val=val;
                     response.status=true;
                     resolve(response)

@@ -47,7 +47,7 @@ function gymregisterstep1(gymData){
         newgym.peakTimes.morningPeakEndTime=gymData.morningPeakEndTime
         newgym.peakTimes.nightPeakStartTime=gymData.nightPeakStartTime
         newgym.peakTimes.nightPeakEndTime=gymData.nightPeakEndTime
-        newgym.description=gymData.description
+        newgym.description=gymData.gymDescription
         newgym.owner=gymData.gymowner
         newgym.holidayDays=gymData.holidayDays
         newgym.save()
@@ -76,15 +76,27 @@ function gymregisterstep2(id,locationdata){
 
 function gymregisterstep3(id,imageData){
   return new Promise(async(resolve,reject)=>{
-    const gym = await Gym.findById(id);
-    gym.images = gym.images || [];
-    gym.images.push({
-      data: imageData.data,
-      contentType: imageData.contentType,
-      imageName: imageData.imageName
-    });
-    const updatedGym = await gym.save();
+    // const gym = await Gym.findById(id);
+    // if (gym.images) {
+    //   gym.images = []
+    // }else{
+    //   gym.images=gym.images
+    // }
+    // //gym.images = []||gym.images;
+    // gym.images.push({
+    //   data: imageData.data,
+    //   contentType: imageData.contentType,
+    //   imageName: imageData.imageName
+    // });
+    // const updatedGym = await gym.save();
+    // resolve(updatedGym)
+
+    const updatedGym = await Gym.findByIdAndUpdate(id, { $push: { images: imageData } }, { new: true });
+
     resolve(updatedGym)
+
+
+
 })
 }
 
@@ -103,6 +115,14 @@ function calculatedailyfee(monthlyFee,holidays){
 function getdetailsofownersgym(id){
   return new Promise(async(resolve,reject)=>{
     const all = await Gym.find({owner:id});
+
+    
+    all.forEach(gym => {
+      gym.images.forEach(image => {
+        image.data = image.data.toString('base64');
+      });
+    });
+
     resolve(all)
 
 
@@ -112,6 +132,8 @@ function getdetailsofownersgym(id){
 function chk(id,imageData){
   return new Promise(async(resolve,reject)=>{
     const gym = await Gym.findById(id)
+
+   
 
     resolve(gym)
 })
@@ -123,4 +145,5 @@ function chk(id,imageData){
 
 
 module.exports = { calculatedailyfee,
-gymregisterstep1,gymregisterstep2,gymregisterstep3,chk};
+gymregisterstep1,gymregisterstep2,gymregisterstep3,chk,
+getdetailsofownersgym};

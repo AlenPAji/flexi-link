@@ -62,25 +62,38 @@ router.get("/imageupload", function (req, res, next) {
 
 
 router.post('/imageupload', upload.array('photos', 5), function (req, res, next) {
-var files=req.files
-for (let i = 0; i < files.length; i++) {
-  console.log("hi")
-  const imageData = {
-      data: files[i].buffer,
-      contentType: files[i].mimetype,
-      imageName: files[i].originalname
-  };
+  var files = req.files;
+  var redirectSent = false; // Flag to track if redirect has been sent
+  
+  for (let i = 0; i < files.length; i++) {
+      console.log("hi");
+      const imageData = {
+          data: files[i].buffer,
+          contentType: files[i].mimetype,
+          imageName: files[i].originalname
+      };
 
-  gymregister.gymregisterstep3(req.session.gymregid,imageData).then((response)=>{
-    console.log(response)
-  })
+      gymregister.gymregisterstep3(req.session.gymregid, imageData).then((response) => {
+          console.log(response);
+          
+          // Check if redirect has already been sent
+          if (!redirectSent) {
+              redirectSent = true;
+              res.redirect("/gymowner");
+          }
+      }).catch((error) => {
+          console.error(error);
+          
+          // Handle error here if necessary
+          // Ensure to set redirectSent to true if redirect is sent within error handling
+      });
+  }
+});
 
-}
-})
 
 
 router.get("/imgview",(req,res)=>{
-  const l='65d8646edd4bbd9e0e59b186'
+  const l='65d99ae31d14b2c98057a58e'
   gymregister.chk(l).then((response)=>{
     //res.writeHead(200, {'Content-Type': 'multipart/form-data'});
     const imagesHTML = response.images.map(image => `<img src="data:${image.contentType};base64,${image.data.toString('base64')}" alt="${image.imageName}">`);
@@ -135,7 +148,11 @@ router.post("/registergym", verifyLogin,function (req, res, next) {
 });
 
 router.get("/",verifyLogin, function (req, res, next) {
-res.render("gym-owner/owner-dashboard",{username:req.session.gymowner.username})
+  gymregister.getdetailsofownersgym(req.session.gymowner._id).then((response)=>{
+    console.log(response)
+    res.render("gym-owner/owner-dashboard",{username:req.session.gymowner.username,response})
+  })
+
 //console.log(req.session.gymowner.username)
 });
 
