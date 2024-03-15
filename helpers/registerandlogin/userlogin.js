@@ -1,7 +1,8 @@
 // var db=require('../../config/connection')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const { resourceLimits } = require('worker_threads');
 const gymownerSchema = new Schema({
     email: String,
     username: String,
@@ -54,8 +55,36 @@ function login(userdata){
         }
     }
     )
+}
 
-   
+
+
+    function fd(ids){
+        return new Promise(async(resolve,reject)=>{
+            
+                try {
+                    // Find GymOwners with the provided _id values
+                    const owners = await gymowner.find({ _id: { $in: ids } }, 'email username _id');
+            
+                    // Extract emails and usernames from the retrieved GymOwners
+                    const result = owners.map(owner => ({
+                        id:owner._id,    
+                        email: owner.email,
+                        username: owner.username
+                    }));
+            
+                    resolve(result)
+                } catch (error) {
+                    console.error('Error fetching emails and usernames:', error);
+                    throw error;
+                }
+            
+        })
+    }
+
+
+
+
 
     // async function fnd(){
     //     const filter={email:eml}
@@ -76,10 +105,12 @@ function login(userdata){
     // }
 
     // fnd();
-}
+
 
 module.exports = {
     register,
-    login
+    login,
+    fd
+    
 }
   

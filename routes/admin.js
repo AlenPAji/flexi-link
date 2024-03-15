@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 
 var loginregister = require('../helpers/registerandlogin/adminlogin')
+var monitize = require("../helpers/adminHelpers/monetize")
+var userdetails = require('../helpers/registerandlogin/userlogin')
 
 
 
@@ -14,9 +16,22 @@ const verifyLogin=(req,res,next)=>{
   }
 }
 
+router.get("/",verifyLogin,(req,res)=>{
+  res.render('admin/admin_dashboard')
+})
+
 /* GET users listing. */
-router.get('/',verifyLogin, function(req, res, next) {
-  res.render('admin/adminhome');
+router.get('/pending',verifyLogin, function(req, res, next) {
+  monitize.fetch_details().then((response)=>{
+    userdetails.fd(response.applied).then((response)=>{
+
+      console.log(response)
+
+      res.render('admin/adminhome',{users : response});
+
+    })
+  })
+  
 });
 
 router.get('/login',(req,res)=>{
@@ -34,6 +49,8 @@ router.post('/login',(req,res)=>{
     console.log(response)
   })
 })
+
+
 
 
 

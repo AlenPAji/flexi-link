@@ -50,8 +50,18 @@ function apply(ownerId){
 }
 
 
+function fetch_details(){
+    return new Promise(async(resolve,reject)=>{
+        const monetization = await Monitize.findOne({});
+        resolve(monetization)
+
+    })
+}
+
+
 module.exports = {
-    apply
+    apply,
+    fetch_details
 }
 
 
