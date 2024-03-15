@@ -41,6 +41,15 @@ app.use('/users', usersRouter);
 app.use('/gymowner',gymRouter);
 
 
+app.use('/login', indexRouter);
+app.use('/register', indexRouter);
+app.use('/registergym', indexRouter);
+app.use('/owner-dashboard', indexRouter);
+app.use('/gymimage', indexRouter);
+app.use('/getaddress', indexRouter);
+app.use('/check', indexRouter);
+
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
