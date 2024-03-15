@@ -2,24 +2,22 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt')
-const gymownerSchema = new Schema({
-    email: String,
-    username: String,
-    password: String,
-    verified: { type: Boolean, default: false } // Add the 'verified' field with default value false
-  });
-  
+const adminSchema = new Schema({
+    email : String,
+    password : String
 
-const gymowner= mongoose.model('owner', gymownerSchema);
+  });
+
+const admin= mongoose.model('admin', adminSchema);
 
 function register(userData){
     console.log(userData)
     return new Promise(async(resolve,reject)=>{
         
         userData.password=await bcrypt.hash(userData.password,10)
-        const newowner = new gymowner();
+        const newowner = new admin();
         newowner.email=userData.email;
-        newowner.username=userData.username;
+        //newowner.username=userData.username;
         newowner.password=userData.password;
         newowner.save();
         resolve(newowner);
@@ -33,7 +31,7 @@ function login(userdata){
         const eml=userdata.email;
         const psd=userdata.password;
         const filter={email:eml}
-        const val=await gymowner.findOne(filter).exec();
+        const val=await admin.findOne(filter).exec();
         if(val){
 
             bcrypt.compare(psd, val.password, function(err, result) {

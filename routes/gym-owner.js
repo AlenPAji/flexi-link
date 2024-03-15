@@ -20,6 +20,7 @@ const upload = multer({ storage: storage });
 
 var loginregister = require('../helpers/registerandlogin/userlogin')
 var gymregister = require("../helpers/gymregister/gymreg")
+var monitize = require("../helpers/adminHelpers/monetize")
 
 const verifyLogin=(req,res,next)=>{
   if(req.session.ownerloggedIn){
@@ -66,7 +67,7 @@ router.post('/imageupload', upload.array('photos', 5), function (req, res, next)
   var redirectSent = false; // Flag to track if redirect has been sent
   
   for (let i = 0; i < files.length; i++) {
-      console.log("hi");
+      //console.log("hi");
       const imageData = {
           data: files[i].buffer,
           contentType: files[i].mimetype,
@@ -84,8 +85,7 @@ router.post('/imageupload', upload.array('photos', 5), function (req, res, next)
       }).catch((error) => {
           console.error(error);
           
-          // Handle error here if necessary
-          // Ensure to set redirectSent to true if redirect is sent within error handling
+          
       });
   }
 });
@@ -113,6 +113,7 @@ router.post("/login",(req,res,next)=>{
   loginregister.login(req.body).then((response)=>{
     if(response.status){
       req.session.gymowner= response.val
+      console.log(response.val)
       req.session.ownerloggedIn=true
     }  
     res.redirect("/gymowner");
@@ -132,6 +133,9 @@ router.post('/register',(req,res,next)=>{
 
 router.post("/registergym", verifyLogin,function (req, res, next) {
  req.body.gymowner=req.session.gymowner._id
+ req.body.verified=req.session.gymowner.verified
+
+ //console.log('---***',req.body.verified)
   
   if (req.body.holidayDays) {
     
@@ -155,6 +159,17 @@ router.get("/",verifyLogin, function (req, res, next) {
 
 //console.log(req.session.gymowner.username)
 });
+
+
+router.get('/apply-for-monetization',verifyLogin,(req,res)=>{
+
+  monitize.apply(req.session.gymowner._id).then((response)=>{
+    console.log(response)
+  })
+
+  
+
+})
 
 
 
