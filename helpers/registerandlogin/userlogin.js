@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
 const { resourceLimits } = require('worker_threads');
+const { resolve } = require('path');
 const gymownerSchema = new Schema({
     email: String,
     username: String,
@@ -60,11 +61,16 @@ function login(userdata){
 
 
     function fd(ids){
+        console.log(ids)
         return new Promise(async(resolve,reject)=>{
+
+            const idswithoutdate = ids.map(ids1 => ids1.owner);
+            console.log(idswithoutdate)
             
                 try {
                     // Find GymOwners with the provided _id values
-                    const owners = await gymowner.find({ _id: { $in: ids } }, 'email username _id');
+                    const owners = await gymowner.find({ _id: { $in: idswithoutdate } }, 'email username _id');
+                    console.log(owners)
             
                     // Extract emails and usernames from the retrieved GymOwners
                     const result = owners.map(owner => ({
@@ -79,6 +85,31 @@ function login(userdata){
                     throw error;
                 }
             
+        })
+    }
+
+    function fds1(ids){
+        return new Promise(async(resolve,reject)=>{
+
+            const result=[];
+
+            
+            for (const item of ids){
+                console.log(item.owner)
+                const owner = await gymowner.findById(item.owner);
+                console.log(owner)
+
+                owner.applieddate=item.date
+
+                console.log(owner.applieddate)
+
+                result.push(owner)
+
+
+            }
+
+            resolve(result)
+
         })
     }
 
@@ -110,7 +141,7 @@ function login(userdata){
 module.exports = {
     register,
     login,
-    fd
+    fd,fds1
     
 }
   

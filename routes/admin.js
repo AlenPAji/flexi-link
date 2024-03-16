@@ -23,9 +23,11 @@ router.get("/",verifyLogin,(req,res)=>{
 /* GET users listing. */
 router.get('/pending',verifyLogin, function(req, res, next) {
   monitize.fetch_details().then((response)=>{
-    userdetails.fd(response.applied).then((response)=>{
+    console.log(response)
+    userdetails.fds1(response.applied).then((response)=>{
 
       console.log(response)
+
 
       res.render('admin/adminhome',{users : response});
 
