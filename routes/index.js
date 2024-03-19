@@ -6,13 +6,6 @@ router.get('/', function(req, res, next) {
   res.render('./home/Homeindex');
 });
 
-
-router.get('/login', function(req, res, next) {
-  res.render('./gym-owner/login');
-});
-router.get('/register', function(req, res, next) {
-  res.render('./gym-owner/register');
-});
 router.get('/registergym', function(req, res, next) {
   res.render('./gym-owner/registergym');
 });
