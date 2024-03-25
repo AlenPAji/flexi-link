@@ -4,7 +4,7 @@ var router = express.Router();
 var loginregister = require('../helpers/registerandlogin/adminlogin')
 var monitize = require("../helpers/adminHelpers/monetize")
 var userdetails = require('../helpers/registerandlogin/userlogin')
-
+var gymdetails = require('../helpers/gymregister/gymreg')
 
 
 
@@ -53,6 +53,16 @@ router.post('/login',(req,res)=>{
 })
 
 
+router.get('/review-application',verifyLogin,(req,res)=>{
+  console.log(req.query.id)
+  console.log(req.query.username)
+  gymdetails.ownerFind(req.query.id).then((response)=>{
+    console.log(response)
+  })
+
+
+
+})
 
 
 

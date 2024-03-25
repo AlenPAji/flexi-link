@@ -25,7 +25,14 @@ const gymSchema = new Schema({
     type: { type: String, default: 'Point' },
     coordinates: [Number] // [longitude, latitude]
   },
-  owner: { type: Schema.Types.ObjectId, ref: 'Owner' } // Foreign key to gym owner
+  owner: { type: Schema.Types.ObjectId, ref: 'Owner' }, // Foreign key to gym owner
+  customer:[{type:Schema.Types.ObjectId, ref:''}],
+  reviews: [{ 
+    user: { type: Schema.Types.ObjectId, ref: 'User' }, // Reference to the user who left the review
+    rating: Number,
+    comment: String
+  }]
+
 });
 
 // Define schema for gym owner
@@ -139,6 +146,18 @@ function chk(id,imageData){
 })
 }
 
+function ownerFind(ownerId){
+  return new Promise(async(resolve,reject)=>{
+    try {
+      const gyms = await Gym.find({ owner: ownerId }).exec();
+      resolve(gyms);
+  } catch (error) {
+      console.error('Error finding gyms by owner:', error);
+      throw error;
+  }
+  })
+}
+
 
 
 
@@ -146,4 +165,4 @@ function chk(id,imageData){
 
 module.exports = { calculatedailyfee,
 gymregisterstep1,gymregisterstep2,gymregisterstep3,chk,
-getdetailsofownersgym};
+getdetailsofownersgym,ownerFind};
