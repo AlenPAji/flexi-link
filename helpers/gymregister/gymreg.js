@@ -123,7 +123,7 @@ function getdetailsofownersgym(id){
   return new Promise(async(resolve,reject)=>{
     const all = await Gym.find({owner:id}).lean();
 
-    
+    console.log("hiii")
     all.forEach(gym => {
       gym.images.forEach(image => {
         image.data = image.data.toString('base64');
