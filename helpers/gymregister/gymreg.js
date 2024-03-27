@@ -121,7 +121,7 @@ function calculatedailyfee(monthlyFee,holidays){
 
 function getdetailsofownersgym(id){
   return new Promise(async(resolve,reject)=>{
-    const all = await Gym.find({owner:id});
+    const all = await Gym.find({owner:id}).lean();
 
     
     all.forEach(gym => {
